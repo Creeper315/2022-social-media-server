@@ -19,5 +19,8 @@
     "mongoose": "^6.5.2",
     "redis": "^4.2.0",
     "socket.io": "^4.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14"
   }
 }

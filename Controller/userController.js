@@ -1,17 +1,16 @@
-const e = require('express');
 const {
     repoUserByEmail,
     repoUserByName,
+    repoFriendByName,
     repoAddFriend,
     repoDeleteFriend,
-} = require('../Repository/userRepo');
-const { repoAddChat, repoRemoveChat } = require('../Repository/chatRepo');
-const { filterUser } = require('./helper');
+} = require("../Repository/userRepo");
+const { repoAddChat, repoRemoveChat } = require("../Repository/chatRepo");
+const { filterUser } = require("./helper");
 
 async function getUser(req, res) {
     let { email } = req.query;
     let got = await repoUserByEmail(email);
-    // console.log('this_user', got);
     res.json(got);
 }
 
@@ -37,11 +36,23 @@ async function addFriend(req, res) {
 
 async function deleteFriend(req, res) {
     let { user1, user2, chatId } = req.body;
-    console.log('user1, user2, chatId', user1, user2, chatId);
+    // console.log('user1, user2, chatId', user1, user2, chatId);
     await repoRemoveChat(chatId);
     await repoDeleteFriend(user1, user2);
     await repoDeleteFriend(user2, user1);
-    res.send('ok');
+    res.send("ok");
 }
 
-module.exports = { getUser, getUserByName, addFriend, deleteFriend };
+async function getFriendByName(req, res) {
+    let { _id, text } = req.query;
+    let listFriend = await repoFriendByName(_id, text);
+    res.json(listFriend);
+}
+
+module.exports = {
+    getUser,
+    getUserByName,
+    addFriend,
+    deleteFriend,
+    getFriendByName,
+};

@@ -1,5 +1,5 @@
 //
-const chatModel = require('../DB/model/chat');
+const chatModel = require("../DB/model/chat");
 
 async function repoAddChat(listUserId, name) {
     let result = await chatModel.insertMany([
@@ -18,13 +18,13 @@ async function repoAddChat(listUserId, name) {
 }
 
 async function repoRemoveChat(chatId) {
-    console.log('delet ct id', chatId);
+    // console.log("delet ct id", chatId);
     let r = await chatModel.deleteOne({ _id: chatId });
-    console.log('delete cid r', r);
+    // console.log("delete cid r", r);
 }
 
 async function repoChatHistory(chatId, curNumMsg, msgLoadAmount) {
-    console.log('finding msg for cid:', chatId, curNumMsg, msgLoadAmount);
+    // console.log("finding msg for cid:", chatId, curNumMsg, msgLoadAmount);
     // let result = await chatModel.findOne({
     //     _id: chatId,
     //     message: { $slice: [curNumMsg - 1, msgLoadAmount] },
@@ -35,7 +35,7 @@ async function repoChatHistory(chatId, curNumMsg, msgLoadAmount) {
         },
         { message: { $slice: [curNumMsg, msgLoadAmount] } }
     );
-    console.log('chat found', result);
+    // console.log("chat found", result);
     return result.message;
 }
 

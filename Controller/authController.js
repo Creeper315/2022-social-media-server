@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
-const AccountModel = require('../DB/model/account');
-const { repoUserByEmail, repoAddUser } = require('../Repository/userRepo');
+const bcrypt = require("bcrypt");
+const AccountModel = require("../DB/model/account");
+const { repoUserByEmail, repoAddUser } = require("../Repository/userRepo");
 // let acc = new AccountModel({
 //     email: 'a@gmail.com',
 //     password: 'psss222',
@@ -14,21 +14,21 @@ const { repoUserByEmail, repoAddUser } = require('../Repository/userRepo');
 
 async function login(req, res) {
     if (req.session.email) {
-        console.log('user already logged in', req.session.email);
+        console.log("user already logged in", req.session.email);
         // res.send(req.session.email); // 已经登录了
         // return;
     }
     let { email, password } = req.body;
     let exist = await repoUserByEmail(email);
     if (exist == null) {
-        res.status(400).send('User does not exist');
+        res.status(400).send("User does not exist");
         return;
     }
 
     let toVerify = await reHashPassword(password, exist.salt);
     // console.log(toVerify, exist.hash);
     if (toVerify != exist.hash) {
-        res.status(400).send('Password incorrect -');
+        res.status(400).send("Password incorrect -");
         return;
     }
     req.session.email = email;
@@ -43,7 +43,7 @@ async function hashPassword(password) {
 
 async function reHashPassword(password, salt) {
     if (salt == undefined) {
-        throw 'Need to provide salt!';
+        throw "Need to provide salt!";
     }
     let hash = await bcrypt.hash(password, salt);
     return hash;
@@ -51,10 +51,10 @@ async function reHashPassword(password, salt) {
 
 async function register(req, res) {
     let { email, password, firstName, lastName } = req.body;
-    console.log('what is ', email, password, firstName, lastName);
+    // console.log('what is ', email, password, firstName, lastName);
     let exist = await repoUserByEmail(email);
     if (exist != null) {
-        res.status(400).send('Email already registered');
+        res.status(400).send("Email already registered");
         return;
     }
     let [hash, salt] = await hashPassword(password);
@@ -72,7 +72,7 @@ async function logout(req, res) {
         res.status(500).json(error);
         return;
     }
-    res.send('success');
+    res.send("success");
 }
 
 async function checkLogin(req, res) {

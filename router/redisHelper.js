@@ -1,9 +1,9 @@
-var session = require('express-session');
-var redisStore = require('connect-redis')(session);
+var session = require("express-session");
+var redisStore = require("connect-redis")(session);
 
-const Redis = require('ioredis');
+const Redis = require("ioredis");
 let redisClient = new Redis();
-const expireSecond = 99999;
+const expireSecond = 600;
 
 // https://www.npmjs.com/package/connect-redis
 // 正确的 session store 方法
@@ -16,7 +16,7 @@ function setSessionStore(app) {
                 ttl: expireSecond,
             }),
             saveUninitialized: false,
-            secret: 'sunnyday',
+            secret: "sunnyday",
             resave: false,
         })
     );

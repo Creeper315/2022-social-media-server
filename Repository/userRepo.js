@@ -1,5 +1,5 @@
 // const conn = require('../DB/connect');
-const AccountModel = require('../DB/model/account');
+const AccountModel = require("../DB/model/account");
 
 // let acc = new AccountModel({
 //     email: 'a@gmail.com',
@@ -31,21 +31,42 @@ async function repoUserByEmail(email) {
 
 async function repoUserByName(text, maxItem = 8) {
     let usr = await AccountModel.aggregate([
-        // {
-        //     $project: {
-        //         email: 1,
-        //         name: { $concat: ['$firstName', ' ', '$lastName'] }, // 相当于只选择某些个别 field
-        //     },
-        // },
         {
-            $addFields: {
-                name: { $concat: ['$firstName', ' ', '$lastName'] }, // 相当于在选择所有 field 基础上，自己加一个 customized field
+            $project: {
+                pro: 1, // 相当于只选择某些个别 field
+                firstName: 1,
+                lastName: 1,
             },
         },
-        { $match: { name: { $regex: new RegExp(text, 'i') } } },
+        {
+            $addFields: {
+                name: { $concat: ["$firstName", " ", "$lastName"] }, // 相当于在选择所有 field 基础上，自己加一个 customized field
+            },
+        },
+        { $match: { name: { $regex: new RegExp(text, "i") } } },
     ]).limit(maxItem);
-    // console.log('found ', usr);
+    // console.log("found ", usr);
     return usr;
+}
+
+async function repoFriendByName(_id, text) {
+    // 寻找这个 id 的 用户，他的所有 friend 里面，谁的名字 like 这个 text
+
+    if (text.length === 0) return [];
+
+    let usr = await AccountModel.findOne(
+        { _id: _id },
+        {
+            // _id: 1,
+            friend: {
+                $elemMatch: {
+                    name: { $regex: new RegExp(text, "i") },
+                },
+            },
+        }
+    ).limit(15);
+    // console.log("usr found", usr);
+    return usr.friend;
 }
 
 async function repoAddUser(email, hash, salt, firstName, lastName) {
@@ -56,7 +77,7 @@ async function repoAddUser(email, hash, salt, firstName, lastName) {
             salt,
             firstName,
             lastName,
-            pro: '',
+            pro: "",
         },
     ]);
     // console.log(result);
@@ -69,12 +90,13 @@ async function repoDeleteFriend(id1, id2) {
         { _id: id1 },
         { $pull: { friend: { _id: id2 } } }
     );
-    console.log('delete f', r);
+    // console.log('delete f', r);
 }
 
 module.exports = {
     repoUserByEmail,
     repoUserByName,
+    repoFriendByName,
     repoAddUser,
     repoAddFriend,
     repoDeleteFriend,

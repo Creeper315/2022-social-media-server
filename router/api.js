@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require("express");
 const route = express.Router();
-const gError = require('./helper');
-const userController = require('../Controller/userController');
-const chatController = require('../Controller/chatController');
+const gError = require("./helper");
+const userController = require("../Controller/userController");
+const chatController = require("../Controller/chatController");
 
 route.use((req, res, next) => {
     let i = req.session.email;
@@ -15,17 +15,21 @@ route.use((req, res, next) => {
     next();
 });
 
-route.get('/getUser', gError(userController.getUser));
+route.get("/getUser", gError(userController.getUser));
 
-route.get('/getUserByName', gError(userController.getUserByName));
+route.get("/getUserByName", gError(userController.getUserByName));
 
-route.post('/addFriend', gError(userController.addFriend));
+route.get("/getFriendByName", gError(userController.getFriendByName));
 
-route.post('/deleteFriend', gError(userController.deleteFriend));
+route.post("/addFriend", gError(userController.addFriend));
 
-route.post('/getChatHistory', gError(chatController.getChatHistory));
+route.post("/deleteFriend", gError(userController.deleteFriend));
 
-route.post('/newMsg', gError(chatController.addChatMsg));
+route.post("/createGroup", gError(chatController.createGroup));
+
+route.post("/getChatHistory", gError(chatController.getChatHistory));
+
+route.post("/newMsg", gError(chatController.addChatMsg));
 
 // route.get('/api', (req, res) => {
 //     console.log('api get', req.session.email);
