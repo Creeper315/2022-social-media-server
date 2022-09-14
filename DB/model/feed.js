@@ -1,11 +1,15 @@
-const mongoose = require('mongoose');
-const msgSchema = require('./msg');
+const mongoose = require("mongoose");
+const msgSchema = require("./msg");
 
 const feedSchema = new mongoose.Schema(
     {
+        user: {
+            type: mongoose.ObjectId,
+            required: true,
+        },
+
         pro: {
             type: String,
-            required: true,
         },
         name: {
             type: String,
@@ -19,7 +23,7 @@ const feedSchema = new mongoose.Schema(
             type: [msgSchema],
         },
     },
-    { collection: 'Feed' }
+    { collection: "Feed" }
 );
 
-module.exports = mongoose.model('Feed', feedSchema);
+module.exports = mongoose.model("Feed", feedSchema);

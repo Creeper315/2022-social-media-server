@@ -4,14 +4,40 @@ const {
     repoFriendByName,
     repoAddFriend,
     repoDeleteFriend,
+    repoDeleteGroup,
 } = require("../Repository/userRepo");
-const { repoAddChat, repoRemoveChat } = require("../Repository/chatRepo");
-const { filterUser } = require("./helper");
+const {
+    repoAddChat,
+    repoRemoveChat,
+    repoGroupRemoveFriend,
+    repoGroupGetNumUser,
+} = require("../Repository/chatRepo");
+// const { filterUser } = require("./helper");
 
 async function getUser(req, res) {
+    // 目前这个 function 只在 initUser 的时候用过
     let { email } = req.query;
     let got = await repoUserByEmail(email);
-    res.json(got);
+    let copy = { ...got }._doc;
+    delete copy.password;
+    delete copy.salt;
+    if (copy.msgNotification == undefined) copy.msgNotificationCount = 0;
+    else {
+        copy.msgNotificationCount = copy.msgNotification.reduce(
+            (a, b) => a + b.count,
+            0
+        );
+    }
+    if (copy.friendNotification == undefined) copy.friendNotificationCount = 0;
+    else {
+        copy.friendNotificationCount = copy.friendNotification.reduce(
+            (a, b) => a + b.count,
+            0
+        );
+    }
+    delete copy.msgNotification;
+    delete copy.friendNotification;
+    res.json(copy);
 }
 
 async function getUserByName(req, res) {
@@ -19,6 +45,12 @@ async function getUserByName(req, res) {
     // console.log(text);
     let got = await repoUserByName(text);
     res.json(got);
+}
+async function getFriendByName(req, res) {
+    let { _id, text } = req.query;
+    console.log("id text", _id, text);
+    let listFriend = await repoFriendByName(_id, text);
+    res.json(listFriend);
 }
 
 async function addFriend(req, res) {
@@ -43,16 +75,20 @@ async function deleteFriend(req, res) {
     res.send("ok");
 }
 
-async function getFriendByName(req, res) {
-    let { _id, text } = req.query;
-    let listFriend = await repoFriendByName(_id, text);
-    res.json(listFriend);
+async function leaveGroup(req, res) {
+    let { _id, chatId } = req.query;
+    await repoDeleteGroup(_id, chatId);
+    await repoGroupRemoveFriend(_id, chatId);
+    res.send(chatId);
+    let count = await repoGroupGetNumUser(chatId);
+    if (count === 0) repoRemoveChat(chatId);
 }
 
 module.exports = {
     getUser,
     getUserByName,
+    getFriendByName,
     addFriend,
     deleteFriend,
-    getFriendByName,
+    leaveGroup,
 };

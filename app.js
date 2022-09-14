@@ -51,44 +51,10 @@ app.use(apiRoute);
 // nothing();
 
 IO.on("connection", (socket) => {
-    console.log("socket connected ", socket.id);
+    // console.log("socket connected ", socket.id);
     socket.emit("confirm connection", socket.id);
 
-    socket.on("join own room", (_id) => {
-        socket.join(_id);
-    });
+    require("./socket/chat")(IO, socket);
 
-    socket.on("join chat room", (chatId) => {
-        // console.log("joined chat room here");
-        socket.join(chatId);
-    });
-
-    socket.on("create group", (chatId, name, listId) => {
-        // - 需要告诉所有在 listId 上的用户 chatId 和 name，让他们在前端更新出来 一行group
-        // - 然后，每个用户，再 emit 给前端，加入 chatId 的 room
-        for (let id of listId) {
-            io.in(id).emit("create group", chatId, name);
-        }
-    });
-
-    socket.on("send msg", (chatId, senderObj) => {
-        // console.log("detect send", senderObj);
-        IO.in(chatId).emit("receieve msg", senderObj);
-    });
-
-    socket.on("add friend", (_id, user) => {
-        // 通知 id 为 _id 的用户，有一个 user obj 的用户添加你好友
-        socket.to(_id).emit("add friend", user);
-    });
-
-    socket.on("delete friend", (_id1, _id2) => {
-        // 通知 id1 的用户，id2 已经把你删了，你也要在前端吧 id2 从 list 里删除
-        console.log("delete", _id1, _id2);
-
-        socket.to(_id1).emit("delete friend", _id2);
-    });
-
-    // socket.on("later pong", (e) => {
-    //     console.log("!!! got later pong", e);
-    // });
+    require("./socket/user")(IO, socket);
 });
