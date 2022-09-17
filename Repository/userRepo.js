@@ -96,7 +96,7 @@ async function repoFriendByName(_id, text) {
     return listFriend;
 }
 
-async function repoAddUser(email, hash, salt, firstName, lastName) {
+async function repoAddUser(email, hash, salt, firstName, lastName, pro) {
     let result = await AccountModel.insertMany([
         {
             email,
@@ -104,7 +104,7 @@ async function repoAddUser(email, hash, salt, firstName, lastName) {
             salt,
             firstName,
             lastName,
-            pro: "",
+            pro,
         },
     ]);
     // console.log(result);

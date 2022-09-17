@@ -20,6 +20,7 @@ async function getNotification(req, res) {
     }
     if (type === "friend") {
         let result = await repoGetFriendNotification(_id);
+        // console.log("fr no result: ", _id, result);
         res.json(result);
         return;
     }
@@ -50,13 +51,24 @@ async function addNotification(req, res) {
 
 async function deleteNotification(req, res) {
     let { _id, type, chatId, friendId } = req.body;
-    console.log("_id, type, chatId, friendId: ", _id, type, chatId, friendId);
+    // console.log("_id, type, chatId, friendId: ", _id, type, chatId, friendId);
     await repoDeleteNotification({ _id, type, chatId, friendId });
     res.send();
+}
+
+async function addFriendNotification(req, res) {
+    let { requester, receiver, requestMsg } = req.body;
+    let isNewRequest = await repoAddFriendNoti(
+        receiver._id,
+        requester,
+        requestMsg
+    );
+    res.send(isNewRequest);
 }
 
 module.exports = {
     getNotification,
     addNotification,
     deleteNotification,
+    addFriendNotification,
 };

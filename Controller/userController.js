@@ -30,10 +30,7 @@ async function getUser(req, res) {
     }
     if (copy.friendNotification == undefined) copy.friendNotificationCount = 0;
     else {
-        copy.friendNotificationCount = copy.friendNotification.reduce(
-            (a, b) => a + b.count,
-            0
-        );
+        copy.friendNotificationCount = copy.friendNotification.length;
     }
     delete copy.msgNotification;
     delete copy.friendNotification;
@@ -48,19 +45,19 @@ async function getUserByName(req, res) {
 }
 async function getFriendByName(req, res) {
     let { _id, text } = req.query;
-    console.log("id text", _id, text);
+    // console.log("id text", _id, text);
     let listFriend = await repoFriendByName(_id, text);
     res.json(listFriend);
 }
 
 async function addFriend(req, res) {
     let { self, other } = req.body;
-    // console.log('correct self other', self, other);
+    // console.log("correct self other", self, other);
     // 1 创建 chat - chat id，
     let chatId = await repoAddChat([self._id, other._id]);
     // 2 在俩人的 friend[] 里面，都加入各自
     let a1 = await repoAddFriend(self._id, other, chatId);
-    // console.log('add friend res', a1);
+    // console.log("add friend res", a1);
     let a2 = await repoAddFriend(other._id, self, chatId);
     // 3 返还给 client，新添加成功了的 user
     res.json({ other, chatId: chatId });
@@ -68,7 +65,7 @@ async function addFriend(req, res) {
 
 async function deleteFriend(req, res) {
     let { user1, user2, chatId } = req.body;
-    // console.log('user1, user2, chatId', user1, user2, chatId);
+    // console.log("user1, user2, chatId", user1, user2, chatId);
     await repoRemoveChat(chatId);
     await repoDeleteFriend(user1, user2);
     await repoDeleteFriend(user2, user1);

@@ -46,7 +46,37 @@ async function repoAddMessageNoti(addToUserId, msgObj) {
     // console.log("push msg noti res", add);
 }
 
-async function repoAddFriendNoti(addToUserId, friendObj) {}
+async function repoAddFriendNoti(addToUserId, friendObj, requestMsg) {
+    // console.log(
+    //     "addToUserId, friendObj, requestMsg: ",
+    //     addToUserId,
+    //     friendObj,
+    //     requestMsg
+    // );
+    // friendObj = {_id, name, pro}
+    let found = await AccountModel.findOne(
+        { _id: addToUserId },
+        {
+            friendNotification: { $elemMatch: { _id: friendObj._id } },
+        }
+    );
+    if (found.friendNotification.length > 0) return false;
+
+    // notification doesnt exist, create new
+    let add = await AccountModel.updateOne(
+        { _id: addToUserId },
+        {
+            $push: {
+                friendNotification: {
+                    friendId: friendObj._id,
+                    ...friendObj,
+                    requestMsg,
+                },
+            },
+        }
+    );
+    return true;
+}
 
 async function repoGetMsgNotification(_id) {
     let r = await AccountModel.findOne({ _id: _id }, { msgNotification: 1 });
@@ -54,7 +84,7 @@ async function repoGetMsgNotification(_id) {
 }
 async function repoGetFriendNotification(_id) {
     let r = await AccountModel.findOne({ _id: _id }, { friendNotification: 1 });
-    return r.msgNotification;
+    return r.friendNotification;
 }
 
 async function repoDeleteNotification({ type, _id, chatId, friendId }) {
@@ -64,6 +94,7 @@ async function repoDeleteNotification({ type, _id, chatId, friendId }) {
             { $pull: { msgNotification: { chatId } } }
         );
     } else {
+        // console.log("? d f", _id, friendId);
         await AccountModel.updateOne(
             { _id },
             { $pull: { friendNotification: { friendId } } }

@@ -30,6 +30,11 @@ route.post(
     gError(notificationController.deleteNotification)
 );
 
+route.post(
+    "/friendRequest",
+    gError(notificationController.addFriendNotification)
+);
+
 route.post("/addFriend", gError(userController.addFriend));
 
 route.post("/addNotification", gError(notificationController.addNotification));

@@ -50,15 +50,15 @@ async function reHashPassword(password, salt) {
 }
 
 async function register(req, res) {
-    let { email, password, firstName, lastName } = req.body;
-    // console.log('what is ', email, password, firstName, lastName);
+    let { email, password, firstName, lastName, pro } = req.body;
+    // console.log("regi what is ", email, password, firstName, lastName, pro);
     let exist = await repoUserByEmail(email);
     if (exist != null) {
         res.status(400).send("Email already registered");
         return;
     }
     let [hash, salt] = await hashPassword(password);
-    await repoAddUser(email, hash, salt, firstName, lastName);
+    await repoAddUser(email, hash, salt, firstName, lastName, pro);
     req.session.email = email;
     res.send(email);
 }

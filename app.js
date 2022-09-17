@@ -29,14 +29,14 @@ http.listen(PORT, () => {
     console.log(`App listen on poty = ${PORT}`);
 });
 
-// app.use(cors());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 setSessionStore(app);
 
 app.get("/", (req, res) => {
-    console.log('"/" test here');
+    // console.log('"/" test here');
     res.send("server works ! haha");
 });
 
@@ -52,7 +52,7 @@ app.use(apiRoute);
 
 IO.on("connection", (socket) => {
     // console.log("socket connected ", socket.id);
-    socket.emit("confirm connection", socket.id);
+    // socket.emit("confirm connection", socket.id);
 
     require("./socket/chat")(IO, socket);
 
